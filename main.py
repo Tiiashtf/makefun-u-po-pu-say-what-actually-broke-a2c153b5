@@ -50,6 +50,16 @@ def main() -> int:
     with open(OUTPUT_FILE, "w", encoding="utf-8", newline="\n") as f:
         f.write(LINE + "\n")
 
+    # Read it back and fail loudly if the bytes on disk differ from
+    # the line: a silent partial write would fail the gate with no
+    # trace of why.
+    with open(OUTPUT_FILE, "rb") as f:
+        written = f.read()
+    if written != (LINE + "\n").encode("utf-8"):
+        print("verification failed: entry.txt differs from the line",
+              file=sys.stderr)
+        return 1
+
     return 0
 
 
